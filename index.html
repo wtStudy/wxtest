@@ -2,59 +2,47 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<title>微信浏览器打开模拟</title>
+<title>微信浏览器打开提示</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-  body { font-family: sans-serif; margin: 20px; }
-  .overlay, .chooser {
-    position: fixed; top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.5);
-    display: none; justify-content:center; align-items:center;
+  body { font-family: sans-serif; margin:20px; background:#f2f2f2; }
+  button { padding:12px 24px; font-size:16px; border:none; background:#007aff; color:#fff; border-radius:5px; cursor:pointer; }
+  .overlay {
+    position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);
+    display:none; justify-content:center; align-items:center;
   }
   .dialog {
-    background:#fff; padding:20px; border-radius:10px; text-align:center;
+    background:#fff; border-radius:10px; padding:20px; max-width:300px; text-align:center;
   }
-  .browser-list {
-    display:flex; justify-content:space-around; margin-top:20px;
+  .copy-btn {
+    margin-top:15px; background:#28a745; color:#fff;
   }
-  .browser-item {
-    cursor:pointer; text-align:center;
-  }
-  .browser-item img {
-    width:48px; height:48px;
+  #copyStatus {
+    margin-top:10px; color:green; display:none;
   }
 </style>
 </head>
 <body>
 
+<h2>测试页面</h2>
+<p>点击下方按钮，在系统浏览器中打开此页面：</p>
 <button onclick="showPrompt()">打开浏览器</button>
 
 <div class="overlay" id="prompt">
   <div class="dialog">
     <p>即将离开微信，在浏览器中打开？</p>
     <button onclick="hidePrompt()">取消</button>
-    <button onclick="showChooser()">允许</button>
+    <button onclick="tryOpenBrowser()">允许</button>
   </div>
 </div>
 
-<div class="overlay" id="chooser" style="align-items:flex-end;">
-  <div class="dialog" style="width:100%; border-radius:16px 16px 0 0;">
-    <p>选择浏览器打开：</p>
-    <div class="browser-list">
-      <div class="browser-item" onclick="openBrowser('chrome')">
-        <img src="https://img.icons8.com/color/48/000000/chrome.png" /><br>Chrome
-      </div>
-      <div class="browser-item" onclick="openBrowser('safari')">
-        <img src="https://img.icons8.com/color/48/000000/safari--v1.png" /><br>Safari
-      </div>
-      <div class="browser-item" onclick="openBrowser('qq')">
-        <img src="https://img.icons8.com/color/48/000000/qq.png" /><br>QQ浏览器
-      </div>
-      <div class="browser-item" onclick="openBrowser('uc')">
-        <img src="https://img.icons8.com/color/48/000000/uc-browser.png" /><br>UC浏览器
-      </div>
-    </div>
-    <button onclick="hideChooser()">取消</button>
+<div class="overlay" id="copyDialog">
+  <div class="dialog">
+    <p>请复制链接，然后粘贴到系统浏览器中打开</p>
+    <input type="text" id="urlInput" style="width:100%; padding:5px;" readonly />
+    <button class="copy-btn" onclick="copyLink()">复制链接</button>
+    <div id="copyStatus">复制成功！</div>
+    <button onclick="hideCopyDialog()" style="margin-top:10px;">关闭</button>
   </div>
 </div>
 
@@ -65,41 +53,32 @@ function showPrompt() {
 function hidePrompt() {
   document.getElementById('prompt').style.display = 'none';
 }
-function showChooser() {
-  hidePrompt();
-  document.getElementById('chooser').style.display = 'flex';
-}
-function hideChooser() {
-  document.getElementById('chooser').style.display = 'none';
-}
-
-// 下面是常用浏览器唤醒协议（iOS和Android可能不同）
-function openBrowser(name) {
+function showCopyDialog() {
   const url = window.location.href;
-  let schemeUrl = '';
-
-  switch(name) {
-    case 'chrome':
-      schemeUrl = 'googlechrome://navigate?url=' + encodeURIComponent(url);
-      break;
-    case 'safari':
-      // iOS Safari不支持scheme打开，只能引导用户自己打开
-      alert('请使用Safari浏览器打开');
-      return;
-    case 'qq':
-      schemeUrl = 'mqqbrowser://url=' + encodeURIComponent(url);
-      break;
-    case 'uc':
-      schemeUrl = 'ucbrowser://navigate?url=' + encodeURIComponent(url);
-      break;
-    default:
-      schemeUrl = url;
+  document.getElementById('urlInput').value = url;
+  document.getElementById('copyDialog').style.display = 'flex';
+  document.getElementById('copyStatus').style.display = 'none';
+}
+function hideCopyDialog() {
+  document.getElementById('copyDialog').style.display = 'none';
+}
+function copyLink() {
+  const input = document.getElementById('urlInput');
+  input.select();
+  input.setSelectionRange(0, 99999);
+  try {
+    document.execCommand('copy');
+    document.getElementById('copyStatus').style.display = 'block';
+  } catch (e) {
+    alert('复制失败，请手动复制链接');
   }
-
-  // 尝试跳转到对应浏览器
-  window.location.href = schemeUrl;
-
-  // 一般需要结合倒计时或页面提示做降级处理，微信可能拦截跳转
+}
+function tryOpenBrowser() {
+  hidePrompt();
+  // 直接跳转当前链接，尝试唤起系统浏览器
+  window.location.href = window.location.href;
+  // 或者弹出复制链接提示
+  // showCopyDialog();
 }
 </script>
 
