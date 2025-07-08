@@ -1,130 +1,107 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>打开浏览器提示</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-          font-family: sans-serif;
-          margin: 0;
-          padding: 20px;
-          background: #f2f2f2;
-        }
-        button {
-          padding: 12px 24px;
-          font-size: 16px;
-          border: none;
-          background-color: #007aff;
-          color: white;
-          border-radius: 5px;
-        }
-        .overlay, .browser-chooser {
-          position: fixed;
-          top: 0; left: 0;
-          width: 100%; height: 100%;
-          background: rgba(0,0,0,0.4);
-          display: none;
-          justify-content: center;
-          align-items: center;
-        }
-        .dialog, .browser-chooser-content {
-          background: white;
-          border-radius: 10px;
-          padding: 20px;
-          text-align: center;
-        }
-        .dialog p {
-          margin-bottom: 20px;
-        }
-        .dialog button {
-          margin: 0 10px;
-        }
-        .browser-chooser {
-          align-items: flex-end;
-        }
-        .browser-chooser-content {
-          width: 100%;
-          border-radius: 16px 16px 0 0;
-        }
-        .browser-icons {
-          display: flex;
-          justify-content: space-around;
-          flex-wrap: wrap;
-        }
-        .browser-icons div {
-          text-align: center;
-          margin: 10px;
-        }
-        .browser-icons img {
-          width: 48px;
-          height: 48px;
-          margin-bottom: 5px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>微信浏览器打开模拟</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  body { font-family: sans-serif; margin: 20px; }
+  .overlay, .chooser {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.5);
+    display: none; justify-content:center; align-items:center;
+  }
+  .dialog {
+    background:#fff; padding:20px; border-radius:10px; text-align:center;
+  }
+  .browser-list {
+    display:flex; justify-content:space-around; margin-top:20px;
+  }
+  .browser-item {
+    cursor:pointer; text-align:center;
+  }
+  .browser-item img {
+    width:48px; height:48px;
+  }
+</style>
 </head>
 <body>
-<h2>这是一个测试页面</h2>
-<p>点击下方按钮，尝试在浏览器中打开此页面：</p>
+
 <button onclick="showPrompt()">打开浏览器</button>
 
-<!-- 第一个弹框 -->
-<div class="overlay" id="firstPrompt">
-    <div class="dialog">
-        <p>即将离开微信，在浏览器中打开？</p>
-        <button onclick="hidePrompt()">取消</button>
-        <button onclick="showBrowserChooser()">允许</button>
-    </div>
+<div class="overlay" id="prompt">
+  <div class="dialog">
+    <p>即将离开微信，在浏览器中打开？</p>
+    <button onclick="hidePrompt()">取消</button>
+    <button onclick="showChooser()">允许</button>
+  </div>
 </div>
 
-<!-- 模拟浏览器选择器 -->
-<div class="browser-chooser" id="browserChooser">
-    <div class="browser-chooser-content">
-        <p>选择使用的浏览器：</p>
-        <div class="browser-icons">
-            <div onclick="openInBrowser()">
-                <img src="https://img.icons8.com/color/48/000000/chrome.png" />
-                <div>Chrome</div>
-            </div>
-            <div onclick="openInBrowser()">
-                <img src="https://img.icons8.com/color/48/000000/safari--v1.png" />
-                <div>Safari</div>
-            </div>
-            <div onclick="openInBrowser()">
-                <img src="https://img.icons8.com/color/48/000000/opera.png" />
-                <div>Opera</div>
-            </div>
-            <div onclick="openInBrowser()">
-                <img src="https://img.icons8.com/color/48/000000/firefox.png" />
-                <div>Firefox</div>
-            </div>
-        </div>
-        <button onclick="hideBrowserChooser()">取消</button>
+<div class="overlay" id="chooser" style="align-items:flex-end;">
+  <div class="dialog" style="width:100%; border-radius:16px 16px 0 0;">
+    <p>选择浏览器打开：</p>
+    <div class="browser-list">
+      <div class="browser-item" onclick="openBrowser('chrome')">
+        <img src="https://img.icons8.com/color/48/000000/chrome.png" /><br>Chrome
+      </div>
+      <div class="browser-item" onclick="openBrowser('safari')">
+        <img src="https://img.icons8.com/color/48/000000/safari--v1.png" /><br>Safari
+      </div>
+      <div class="browser-item" onclick="openBrowser('qq')">
+        <img src="https://img.icons8.com/color/48/000000/qq.png" /><br>QQ浏览器
+      </div>
+      <div class="browser-item" onclick="openBrowser('uc')">
+        <img src="https://img.icons8.com/color/48/000000/uc-browser.png" /><br>UC浏览器
+      </div>
     </div>
+    <button onclick="hideChooser()">取消</button>
+  </div>
 </div>
 
 <script>
-    function showPrompt() {
-      document.getElementById("firstPrompt").style.display = "flex";
-    }
+function showPrompt() {
+  document.getElementById('prompt').style.display = 'flex';
+}
+function hidePrompt() {
+  document.getElementById('prompt').style.display = 'none';
+}
+function showChooser() {
+  hidePrompt();
+  document.getElementById('chooser').style.display = 'flex';
+}
+function hideChooser() {
+  document.getElementById('chooser').style.display = 'none';
+}
 
-    function hidePrompt() {
-      document.getElementById("firstPrompt").style.display = "none";
-    }
+// 下面是常用浏览器唤醒协议（iOS和Android可能不同）
+function openBrowser(name) {
+  const url = window.location.href;
+  let schemeUrl = '';
 
-    function showBrowserChooser() {
-      hidePrompt();
-      document.getElementById("browserChooser").style.display = "flex";
-    }
+  switch(name) {
+    case 'chrome':
+      schemeUrl = 'googlechrome://navigate?url=' + encodeURIComponent(url);
+      break;
+    case 'safari':
+      // iOS Safari不支持scheme打开，只能引导用户自己打开
+      alert('请使用Safari浏览器打开');
+      return;
+    case 'qq':
+      schemeUrl = 'mqqbrowser://url=' + encodeURIComponent(url);
+      break;
+    case 'uc':
+      schemeUrl = 'ucbrowser://navigate?url=' + encodeURIComponent(url);
+      break;
+    default:
+      schemeUrl = url;
+  }
 
-    function hideBrowserChooser() {
-      document.getElementById("browserChooser").style.display = "none";
-    }
+  // 尝试跳转到对应浏览器
+  window.location.href = schemeUrl;
 
-    function openInBrowser() {
-      // ⚠️ 微信中会拦截 window.open/new tab，跳转当前页可能仍被限制
-      window.location.href = window.location.href;
-    }
+  // 一般需要结合倒计时或页面提示做降级处理，微信可能拦截跳转
+}
 </script>
+
 </body>
 </html>
