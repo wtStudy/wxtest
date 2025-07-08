@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>打开浏览器提示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+          font-family: sans-serif;
+          margin: 0;
+          padding: 20px;
+          background: #f2f2f2;
+        }
+        button {
+          padding: 12px 24px;
+          font-size: 16px;
+          border: none;
+          background-color: #007aff;
+          color: white;
+          border-radius: 5px;
+        }
+        .overlay, .browser-chooser {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: rgba(0,0,0,0.4);
+          display: none;
+          justify-content: center;
+          align-items: center;
+        }
+        .dialog, .browser-chooser-content {
+          background: white;
+          border-radius: 10px;
+          padding: 20px;
+          text-align: center;
+        }
+        .dialog p {
+          margin-bottom: 20px;
+        }
+        .dialog button {
+          margin: 0 10px;
+        }
+        .browser-chooser {
+          align-items: flex-end;
+        }
+        .browser-chooser-content {
+          width: 100%;
+          border-radius: 16px 16px 0 0;
+        }
+        .browser-icons {
+          display: flex;
+          justify-content: space-around;
+          flex-wrap: wrap;
+        }
+        .browser-icons div {
+          text-align: center;
+          margin: 10px;
+        }
+        .browser-icons img {
+          width: 48px;
+          height: 48px;
+          margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<h2>这是一个测试页面</h2>
+<p>点击下方按钮，尝试在浏览器中打开此页面：</p>
+<button onclick="showPrompt()">打开浏览器</button>
+
+<!-- 第一个弹框 -->
+<div class="overlay" id="firstPrompt">
+    <div class="dialog">
+        <p>即将离开微信，在浏览器中打开？</p>
+        <button onclick="hidePrompt()">取消</button>
+        <button onclick="showBrowserChooser()">允许</button>
+    </div>
+</div>
+
+<!-- 模拟浏览器选择器 -->
+<div class="browser-chooser" id="browserChooser">
+    <div class="browser-chooser-content">
+        <p>选择使用的浏览器：</p>
+        <div class="browser-icons">
+            <div onclick="openInBrowser()">
+                <img src="https://img.icons8.com/color/48/000000/chrome.png" />
+                <div>Chrome</div>
+            </div>
+            <div onclick="openInBrowser()">
+                <img src="https://img.icons8.com/color/48/000000/safari--v1.png" />
+                <div>Safari</div>
+            </div>
+            <div onclick="openInBrowser()">
+                <img src="https://img.icons8.com/color/48/000000/opera.png" />
+                <div>Opera</div>
+            </div>
+            <div onclick="openInBrowser()">
+                <img src="https://img.icons8.com/color/48/000000/firefox.png" />
+                <div>Firefox</div>
+            </div>
+        </div>
+        <button onclick="hideBrowserChooser()">取消</button>
+    </div>
+</div>
+
+<script>
+    function showPrompt() {
+      document.getElementById("firstPrompt").style.display = "flex";
+    }
+
+    function hidePrompt() {
+      document.getElementById("firstPrompt").style.display = "none";
+    }
+
+    function showBrowserChooser() {
+      hidePrompt();
+      document.getElementById("browserChooser").style.display = "flex";
+    }
+
+    function hideBrowserChooser() {
+      document.getElementById("browserChooser").style.display = "none";
+    }
+
+    function openInBrowser() {
+      // ⚠️ 微信中会拦截 window.open/new tab，跳转当前页可能仍被限制
+      window.location.href = window.location.href;
+    }
+</script>
+</body>
+</html>
